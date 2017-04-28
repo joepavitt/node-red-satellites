@@ -1,0 +1,79 @@
+<script type="text/javascript">
+    RED.nodes.registerType('satellite',{
+        category: 'satellites',
+        color: '#878787',
+        defaults: {
+            satid: {value:""},
+            tle1: {value:""},
+            tle2: {value:""},
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "white-globe.png",
+        label: function() {
+            return this.name || "satellite";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="satellite">
+    <div class="form-row">
+        <label for="node-input-satid"><i class="icon-tag"></i> Sat. Name</label>
+        <input type="text" id="node-input-satid" placeholder="e.g. 'ISS'">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> TLE 1</label>
+        <input type="text" id="node-input-tle1" placeholder="1 25544U 98067A   13149.87225694  .00009369  00000-0  16828-3 0  9031">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> TLE 2</label>
+        <input type="text" id="node-input-tle2" placeholder="2 25544 051.6485 199.1576 0010128 012.7275 352.5669 15.50581403831869">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="satellite">
+	<p>A node to convert TLE data into position and velocity data given a JavaScript date.</p>
+    <p>TLE 1<br>(e.g. '1 25544U 98067A   13149.87225694  .00009369  00000-0  16828-3 0  9031')</p>
+    <p>TLE 2<br>(e.g. '2 25544 051.6485 199.1576 0010128 012.7275 352.5669 15.50581403831869')</p>
+	<p>Example TLE data is available <a href="https://www.celestrak.com/NORAD/elements/stations.txt" target="_blank">here</a></p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('earth',{
+        category: 'satellites',
+        color: '#6b89ef',
+        defaults: {
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:0,
+        icon: "white-globe.png",
+        label: function() {
+            return this.name || "earth";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="earth">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="earth">
+    <div>
+		<label>Open Earth View</label>
+		<a href="/earth" class="editor-button" style="margin-left: 10px;" target="_blank">
+			<i class="fa fa-external-link"></i>
+		</a>
+	</div>
+	<p>A 3d viewer for Earth and any satellites that are input here.</p>
+	<p>The minimum <code>msg.payload</code> must contain <code>name</code>, <code>position</code> and <code>velocity</code> properties, e.g.</p>
+	<pre>{id : "ISS", "position": { "x": 3720.74, "y": 2148.92, "z": 5236.12 }, "velocity": { "x": -2.7, "y": 7.1, "z": -1.0 } }</pre>
+</script>
