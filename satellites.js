@@ -6,7 +6,7 @@ module.exports = function (RED) {
 	var socket;
 
 	if (typeof define !== 'function') {
-		var define = require('amdefine')(module)
+		var define = require('amdefine')(module);
 	}
 
 	define(['./node_modules/satellite.js/dist/satellite'], function (js) {
@@ -19,7 +19,7 @@ module.exports = function (RED) {
 			var node = this;
 			console.log(express.static(__dirname + '/satellites'));
 
-			RED.httpNode.use("/earth", express.static(__dirname + '/satellites'));
+			// RED.httpNode.use("/earth", express.static(__dirname + '/satellites'));
 
 			this.on('input', function (msg) {
 				var satellite = js.satellite;
@@ -39,6 +39,27 @@ module.exports = function (RED) {
 			});
 		}
 		RED.nodes.registerType("satellite", SatelliteNode);
+
+
+		function LatLngNode(config) {
+			RED.nodes.createNode(this, config);
+
+			var node = this;
+			console.log(express.static(__dirname + '/satellites'));
+
+			// RED.httpNode.use("/earth", express.static(__dirname + '/satellites'));
+
+			this.on('input', function (msg) {
+				var satellite = js.satellite;
+
+				// Initialize a satellite record
+				var gmst = satellite.gstimeFromDate(new Date());
+				var latlng = satellite.eciToGeodetic(msg.payload.position, gmst);
+				msg.payload = latlng
+				node.send(msg);
+			});
+		}
+		RED.nodes.registerType("latlng", LatLngNode);
 	});
 
 	function EarthNode(config) {

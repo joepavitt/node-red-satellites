@@ -77,3 +77,32 @@
 	<p>The minimum <code>msg.payload</code> must contain <code>name</code>, <code>position</code> and <code>velocity</code> properties, e.g.</p>
 	<pre>{id : "ISS", "position": { "x": 3720.74, "y": 2148.92, "z": 5236.12 }, "velocity": { "x": -2.7, "y": 7.1, "z": -1.0 } }</pre>
 </script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('latlng',{
+        category: 'satellites',
+        color: '#878787',
+        defaults: {
+            name: {value:""}
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "white-globe.png",
+        label: function() {
+            return this.name || "latlng";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="latlng">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="latlng">
+    <div>
+		Get Lat/Lng Height
+	</div>
+</script>
