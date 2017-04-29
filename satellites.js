@@ -19,9 +19,6 @@ module.exports = function (RED) {
 			this.tle2 = config.tle2 || '';			
 			
 			var node = this;
-			console.log(express.static(__dirname + '/satellites'));
-
-			// RED.httpNode.use("/earth", express.static(__dirname + '/satellites'));
 
 			this.on('input', function (msg) {
 				var satellite = js.satellite;
@@ -31,9 +28,21 @@ module.exports = function (RED) {
 
 				// Initialize a satellite record
 				var satrec = satellite.twoline2satrec(node.tle1, node.tle2);
-				var posvel = satellite.propagate(satrec, new Date()); // msg.payload.toLowerCase();
+
+				var datetime; // = msg.payload ? msg.payload : new Date()
+
+				var posvel;
+				if (msg.payload && typeof(msg.payload) === 'number') {
+					datetime = msg.payload;
+				} else {
+					var now = new Date();
+					datetime = now.getTime();
+				}
+				posvel = satellite.propagate(satrec, new Date(datetime));
+
 				msg.payload = {
 					name : node.satid,
+					timestamp : datetime,
 					position : posvel.position,
 					velocity : posvel.velocity
 				}
@@ -47,18 +56,16 @@ module.exports = function (RED) {
 			RED.nodes.createNode(this, config);
 
 			var node = this;
-			console.log(express.static(__dirname + '/satellites'));
-
-			// RED.httpNode.use("/earth", express.static(__dirname + '/satellites'));
 
 			this.on('input', function (msg) {
 				var satellite = js.satellite;
 
 				// Initialize a satellite record
-				var gmst = satellite.gstimeFromDate(new Date());
+				var gmst = satellite.gstimeFromDate(new Date(msg.payload.timestamp));
 				var latlng = satellite.eciToGeodetic(msg.payload.position, gmst);
 				msg.payload = {
 					name : msg.payload.name,
+					timestamp : msg.payload.timestamp,
 					lat : satellite.degreesLat(latlng.latitude),
 					lon : satellite.degreesLong(latlng.longitude)
 				};
@@ -75,14 +82,10 @@ module.exports = function (RED) {
 		}
 		var node = this;
 
-		console.log(express.static(__dirname + '/satellites'));
-
 		RED.httpNode.use("/earth", express.static(__dirname + '/satellites'));
 
 		var onConnection = function (client) {
 			node.on('input', function (msg) {
-				console.log('earth input received');
-				console.log(msg.payload)
 				client.emit("earthdata", msg.payload);
 			});
 			
