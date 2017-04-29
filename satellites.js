@@ -9,6 +9,8 @@ module.exports = function (RED) {
 		var define = require('amdefine')(module);
 	}
 
+	var deg2rad = 57.2958;
+
 	define(['./node_modules/satellite.js/dist/satellite'], function (js) {
 		function SatelliteNode(config) {
 			RED.nodes.createNode(this, config);
@@ -55,7 +57,11 @@ module.exports = function (RED) {
 				// Initialize a satellite record
 				var gmst = satellite.gstimeFromDate(new Date());
 				var latlng = satellite.eciToGeodetic(msg.payload.position, gmst);
-				msg.payload = latlng
+				msg.payload = {
+					name : msg.payload.name,
+					lat : satellite.degreesLat(latlng.latitude),
+					lon : satellite.degreesLong(latlng.longitude)
+				};
 				node.send(msg);
 			});
 		}
