@@ -10,7 +10,7 @@
         },
         inputs:1,
         outputs:1,
-        icon: "white-globe.png",
+        icon: "satellite.png",
         label: function() {
             return this.name || "satellite";
         }
@@ -37,10 +37,83 @@
 </script>
 
 <script type="text/x-red" data-help-name="satellite">
-	<p>A node to convert TLE data into position and velocity data given an (optional) timestamp input.</p>
-    <p>TLE 1<br>(e.g. '1 25544U 98067A   13149.87225694  .00009369  00000-0  16828-3 0  9031')</p>
-    <p>TLE 2<br>(e.g. '2 25544 051.6485 199.1576 0010128 012.7275 352.5669 15.50581403831869')</p>
+	<p>A node to convert TLE data into position and velocity data given an (optional) timestamp input. The input can also be an array of timestamps, for which, the output will be an array of positions and velocities at each of those times.</p>
 	<p>Example TLE data is available <a href="https://www.celestrak.com/NORAD/elements/stations.txt" target="_blank">here</a></p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('latlng',{
+        category: 'satellites',
+        color: '#878787',
+        defaults: {
+            name: {value:""}
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "white-globe.png",
+        label: function() {
+            return this.name || "latlng";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="latlng">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="latlng">
+    <div>
+		Get Lat/Lng Height
+	</div>
+</script>
+
+
+<script type="text/javascript">
+    RED.nodes.registerType('timearray',{
+        category: 'satellites',
+        color: '#878787',
+        defaults: {
+            plus: {value:0},
+            minus: {value:0},
+            samples: {value:1},
+            name: {value:""}
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "clock.png",
+		paletteLabel: 'time array',
+        label: function() {
+            return this.name || "time array";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="timearray">
+    <div class="form-row" style="margin-left: 100px; width: 70%">
+		<label style="width: 70px; margin-right: 10px;" for="node-input-minus"><strong>+/-</strong> Minus</label>
+		<input style="width: calc(40% - 120px)" type="number" id="node-input-minus" placeholder="0" min="0">
+		<label style="width:30px">mins</label>
+		<label style="margin-left: 20%;width: 70px; margin-right: 10px;" for="node-input-plus"><strong>+/-</strong> Plus</label>
+		<input style="width: calc(40% - 120px)" type="number" id="node-input-plus" placeholder="0" min="0">
+		<label style="width:30px">mins</label>
+    </div>
+	<div class="form-row">
+        <label for="node-input-samples"><i class="icon-tag"></i> Samples</label>
+        <input type="number" id="node-input-samples" placeholder="1" min="1">
+    </div>
+	<div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="timearray">
+    <div>
+		Given an input of a single timestamp, this node will output an array, length <code>samples</code>, of timestamps ranging from <code>msg.payload - minus</code> to <code>msg.payload + plus</code>
+	</div>
 </script>
 
 <script type="text/javascript">
@@ -76,33 +149,4 @@
 	<p>A 3d viewer for Earth and any satellites that are input here.</p>
 	<p>The minimum <code>msg.payload</code> must contain <code>name</code>, <code>position</code> and <code>velocity</code> properties, e.g.</p>
 	<pre>{id : "ISS", "position": { "x": 3720.74, "y": 2148.92, "z": 5236.12 }, "velocity": { "x": -2.7, "y": 7.1, "z": -1.0 } }</pre>
-</script>
-
-<script type="text/javascript">
-    RED.nodes.registerType('latlng',{
-        category: 'satellites',
-        color: '#878787',
-        defaults: {
-            name: {value:""}
-        },
-        inputs: 1,
-        outputs: 1,
-        icon: "white-globe.png",
-        label: function() {
-            return this.name || "latlng";
-        }
-    });
-</script>
-
-<script type="text/x-red" data-template-name="latlng">
-    <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-</script>
-
-<script type="text/x-red" data-help-name="latlng">
-    <div>
-		Get Lat/Lng Height
-	</div>
 </script>
