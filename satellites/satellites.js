@@ -1,7 +1,10 @@
 /*
 Connect to the Node-RED Events
 */
-var ws = io();
+
+var ws = io({
+	path: location.pathname + 'socket.io'
+});
 
 ws.on('connect', function () {
 	console.log("CONNECTED");
@@ -52,7 +55,9 @@ function init() {
 	*/
 
 	camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 100);
-	camera.position.z = 10;
+	camera.up.set( 0, 0, 1 );
+	camera.rotation.x = - Math.PI / 2;
+	camera.position.x = 10;
 
 	controls = new THREE.TrackballControls(camera);
 	controls.rotateSpeed = 1.0;
@@ -61,6 +66,7 @@ function init() {
 	controls.noPan = true;
 	controls.staticMoving = true;
 	controls.dynamicDampingFactor = 0.3;
+	controls.up0.set( 0, 0, 1 ); // set a new up vector
 
 	controls.minDistance = 8;
 	controls.maxDistance = 20;
@@ -76,7 +82,7 @@ function init() {
 	scene = new THREE.Scene();
 
 	// CREATE EARTH
-	geometry = new THREE.SphereGeometry(6.371, 32, 32);
+	geometry = new THREE.SphereGeometry(6.371, 128, 128);
 
 	var texture = new THREE.TextureLoader().load("images/earth_color.jpg");
 	var bump = new THREE.TextureLoader().load("images/earth_bump.jpg");
@@ -91,7 +97,12 @@ function init() {
 	});
 
 	sphere = new THREE.Mesh(geometry, material);
+	sphere.rotation.x = 90 / (180 / Math.PI);
+	sphere.rotation.y = 10.5 / (180 / Math.PI);
 	scene.add(sphere);
+
+
+	geometry = new THREE.SphereGeometry(6.372, 180, 360);
 
 	/*// CREATE STARFIELD
 	var skybox = new THREE.SphereGeometry(90, 32, 32);
@@ -121,7 +132,7 @@ function init() {
 	light.shadow.mapSize.width = 1024;
 	light.shadow.mapSize.height = 1024;
 
-	var ambientLight = new THREE.AmbientLight(0x888888); // soft white light
+	var ambientLight = new THREE.AmbientLight('0x888888'); // soft white light
 	scene.add(ambientLight);
 
 	renderer = new THREE.WebGLRenderer();
@@ -142,15 +153,16 @@ function updateSatellite(data) {
 	var pos = data.position;
 	// render();
 	if (satellites[data.name]) {
-		satellites[data.name].position.set(pos.x / 1000, pos.y / 1000, pos.z / 1000);
+		satellites[data.name].position.set(pos.y / 1000000, -pos.x / 1000000, pos.z / 1000000);
 	} else {
 		var satGeometry = new THREE.SphereGeometry(0.1, 32, 32);
+		console.log(data);
 		var satMaterial = new THREE.MeshPhongMaterial({
-			color: '#bbb',
+			color: data.color || '#bbb',
 			specular: '#eee'
 		});
 		satellites[data.name] = new THREE.Mesh(satGeometry, satMaterial);
-		satellites[data.name].position.set(pos.x / 1000, pos.y / 1000, pos.z / 1000);
+		satellites[data.name].position.set(pos.y / 1000000, -pos.x / 1000000, pos.z / 1000000);
 		scene.add(satellites[data.name]);
 	}
 }

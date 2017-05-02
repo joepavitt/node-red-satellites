@@ -37,39 +37,16 @@
 </script>
 
 <script type="text/x-red" data-help-name="satellite">
-	<p>A node to convert TLE data into position and velocity data given an (optional) timestamp input. The input can also be an array of timestamps, for which, the output will be an array of positions and velocities at each of those times.</p>
-	<p>Example TLE data is available <a href="https://www.celestrak.com/NORAD/elements/stations.txt" target="_blank">here</a></p>
+	<p>A node to convert TLE data into position ({x,y,z} and {lat,lon,alt}) and velocity ({x,y,z}) data given an (optional) timestamp input.</p>
+	<p>If no timestamp is provided, the current datetime is used.</p>
+	<p>The input can also be an array of timestamps, for which, the output will be an array of positions and velocities at each of those times.</p>
+	<p><strong>Units - Position</strong></p>
+	<p>The <code>x</code>, <code>y</code>, <code>z</code> and <code>alt</code> values in expressed in metres and the <code>lat</code> and <code>lon</code> values are in degrees.
+	<p><strong>Units - Velocity</strong></p>
+	<p>The <code>x</code>, <code>y</code> and <code>z</code> values in expressed in metres/second.
+	<p><strong>Orbit Data</strong></p>
+	<p>TLE data is available at <a href="https://www.celestrak.com/NORAD/elements/" target="_blank">celestrak</a>, including a space station data set found <a href="https://www.celestrak.com/NORAD/elements/stations.txt" target="_blank">here</a></p>
 </script>
-
-<script type="text/javascript">
-    RED.nodes.registerType('latlng',{
-        category: 'satellites',
-        color: '#878787',
-        defaults: {
-            name: {value:""}
-        },
-        inputs: 1,
-        outputs: 1,
-        icon: "white-globe.png",
-        label: function() {
-            return this.name || "latlng";
-        }
-    });
-</script>
-
-<script type="text/x-red" data-template-name="latlng">
-    <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-</script>
-
-<script type="text/x-red" data-help-name="latlng">
-    <div>
-		Get Lat/Lng Height
-	</div>
-</script>
-
 
 <script type="text/javascript">
     RED.nodes.registerType('timearray',{
@@ -148,5 +125,17 @@
 	</div>
 	<p>A 3d viewer for Earth and any satellites that are input here.</p>
 	<p>The minimum <code>msg.payload</code> must contain <code>name</code>, <code>position</code> and <code>velocity</code> properties, e.g.</p>
-	<pre>{id : "ISS", "position": { "x": 3720.74, "y": 2148.92, "z": 5236.12 }, "velocity": { "x": -2.7, "y": 7.1, "z": -1.0 } }</pre>
+	<pre>{
+name : "ISS",
+"position": {
+	"x": 3720.74,
+	"y": 2148.92,
+	"z": 5236.12
+},
+"velocity": {
+	"x": -2.7,
+	"y": 7.1,
+	"z": -1.0
+}}</pre>
+	<p>Optionally, you can also include a <code>color</code> property, which will override the default color of the sphere's rendered for a given plotted object.</p>
 </script>

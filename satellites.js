@@ -2,6 +2,7 @@
 module.exports = function (RED) {
 	"use strict";
 	var express = require("express");
+	var path = require("path");
 	var io = require('socket.io');
 	var socket;
 
@@ -24,24 +25,52 @@ module.exports = function (RED) {
 
 				// Initialize a satellite record
 				var satrec = satellite.twoline2satrec(node.tle1, node.tle2),
-					posvel;
+					posvel, gmst, latlng;
 
 				if (msg.payload && typeof (msg.payload) === 'number') {
-					posvel = satellite.propagate(satrec, new Date(msg.payload));
+					var date = new Date(msg.payload);
+					posvel = satellite.propagate(satrec, date);
+					gmst = satellite.gstimeFromDate(date);
+					latlng = satellite.eciToGeodetic(posvel.position, gmst);
 					satellites = {
 						name: node.satid,
 						timestamp: msg.payload,
-						position: posvel.position,
-						velocity: posvel.velocity
+						position: {
+							x: posvel.position.x * 1000,
+							y: posvel.position.y * 1000,
+							z: posvel.position.z * 1000,
+							lat: satellite.degreesLat(latlng.latitude),
+							lon: satellite.degreesLong(latlng.longitude),
+							alt: latlng.height * 1000
+						},
+						velocity: {
+							x: posvel.velocity.x * 1000,
+							y: posvel.velocity.y * 1000,
+							z: posvel.velocity.z * 1000
+						}
 					};
 				} else if (msg.payload && typeof (msg.payload) === 'object' && msg.payload.length) {
 					msg.payload.forEach(function (t, i) {
-						posvel = satellite.propagate(satrec, new Date(t));
+						var date = new Date(t);
+						posvel = satellite.propagate(satrec, date);
+						gmst = satellite.gstimeFromDate(date);
+						latlng = satellite.eciToGeodetic(posvel.position, gmst);
 						satellites.push({
 							name: node.satid + '-' + i,
 							timestamp: t,
-							position: posvel.position,
-							velocity: posvel.velocity
+							position: {
+								x: posvel.position.x * 1000,
+								y: posvel.position.y * 1000,
+								z: posvel.position.z * 1000,
+								lat: satellite.degreesLat(latlng.latitude),
+								lon: satellite.degreesLong(latlng.longitude),
+								alt: latlng.height * 1000
+							},
+							velocity: {
+								x: posvel.velocity.x * 1000,
+								y: posvel.velocity.y * 1000,
+								z: posvel.velocity.z * 1000
+							}
 						});
 					});
 				}
@@ -51,55 +80,10 @@ module.exports = function (RED) {
 			});
 		}
 		RED.nodes.registerType("satellite", SatelliteNode);
-
-
-		function LatLngNode(config) {
-			RED.nodes.createNode(this, config);
-
-			var node = this;
-
-			this.on('input', function (msg) {
-				var satellite = js.satellite;
-				var satellites = [];
-
-				var gmst;
-				var latlng;
-
-				if (msg.payload && typeof (msg.payload) === 'object' && !msg.payload.length) {
-					// Initialize a satellite record
-					gmst = satellite.gstimeFromDate(new Date(msg.payload.timestamp));
-					latlng = satellite.eciToGeodetic(msg.payload.position, gmst);
-					satellites = {
-						name: msg.payload.name,
-						timestamp: msg.payload.timestamp,
-						lat: satellite.degreesLat(latlng.latitude),
-						lon: satellite.degreesLong(latlng.longitude)
-					};
-				} else if (msg.payload && typeof (msg.payload) === 'object' && msg.payload.length) {
-					// Initialize a satellite record
-					msg.payload.forEach(function (s) {
-						gmst = satellite.gstimeFromDate(new Date(s.timestamp));
-						latlng = satellite.eciToGeodetic(s.position, gmst);
-						satellites.push({
-							name: s.name,
-							timestamp: s.timestamp,
-							lat: satellite.degreesLat(latlng.latitude),
-							lon: satellite.degreesLong(latlng.longitude)
-						});
-					});
-				}
-				msg.payload = satellites;
-				node.send(msg);
-			});
-		}
-		RED.nodes.registerType("latlng", LatLngNode);
 	});
 
 	function TimeArrayNode(config) {
 		RED.nodes.createNode(this, config);
-		if (!socket) {
-			socket = io.listen(RED.server);
-		}
 
 		this.minus = (config.minus < 0) ? 0 : config.minus;
 		this.minus = this.minus * 60 * 1000; // convert values form minutes to milliseconds
@@ -136,7 +120,10 @@ module.exports = function (RED) {
 	function EarthNode(config) {
 		RED.nodes.createNode(this, config);
 		if (!socket) {
-			socket = io.listen(RED.server);
+			var fullPath = path.join(RED.settings.httpNodeRoot, 'earth', 'socket.io');
+			socket = io.listen(RED.server, {
+				path: fullPath
+			});
 		}
 		var node = this;
 
@@ -144,9 +131,25 @@ module.exports = function (RED) {
 
 		var onConnection = function (client) {
 			client.setMaxListeners(0);
+			node.status({
+				fill: "green",
+				shape: "dot",
+				text: "connected " + socket.engine.clientsCount
+			});
 
-			node.on('input', function (msg) {
+			function emit(msg) {
 				client.emit("earthdata", msg.payload);
+			}
+
+			node.on('input', emit);
+
+			client.on('disconnect', function () {
+				node.removeListener("input", emit);
+				node.status({
+					fill: "green",
+					shape: "ring",
+					text: "connected " + socket.engine.clientsCount
+				});
 			});
 
 			node.on('close', function () {
