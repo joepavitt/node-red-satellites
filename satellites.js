@@ -4,37 +4,56 @@ module.exports = function (RED) {
 	var express = require("express");
 	var path = require("path");
 	var io = require('socket.io');
+
+	var satellite = require('satellite.js').satellite;
 	var socket;
 
-	if (typeof define !== 'function') {
-		var define = require('amdefine')(module);
-	}
+	function SatelliteNode(config) {
+		RED.nodes.createNode(this, config);
+		this.satid = config.satid || '';
+		this.tle1 = config.tle1 || '';
+		this.tle2 = config.tle2 || '';
 
-	define(['./node_modules/satellite.js/dist/satellite'], function (js) {
-		function SatelliteNode(config) {
-			RED.nodes.createNode(this, config);
-			this.satid = config.satid || '';
-			this.tle1 = config.tle1 || '';
-			this.tle2 = config.tle2 || '';
+		var node = this;
 
-			var node = this;
+		this.on('input', function (msg) {
+			var satellites = [];
 
-			this.on('input', function (msg) {
-				var satellite = js.satellite,
-					satellites = [];
+			// Initialize a satellite record
+			var satrec = satellite.twoline2satrec(node.tle1, node.tle2),
+				posvel, gmst, latlng;
 
-				// Initialize a satellite record
-				var satrec = satellite.twoline2satrec(node.tle1, node.tle2),
-					posvel, gmst, latlng;
-
-				if (msg.payload && typeof (msg.payload) === 'number') {
-					var date = new Date(msg.payload);
+			if (msg.payload && typeof (msg.payload) === 'number') {
+				var date = new Date(msg.payload);
+				posvel = satellite.propagate(satrec, date);
+				gmst = satellite.gstimeFromDate(date);
+				latlng = satellite.eciToGeodetic(posvel.position, gmst);
+				satellites = {
+					name: node.satid,
+					timestamp: msg.payload,
+					position: {
+						x: posvel.position.x * 1000,
+						y: posvel.position.y * 1000,
+						z: posvel.position.z * 1000,
+						lat: satellite.degreesLat(latlng.latitude),
+						lon: satellite.degreesLong(latlng.longitude),
+						alt: latlng.height * 1000
+					},
+					velocity: {
+						x: posvel.velocity.x * 1000,
+						y: posvel.velocity.y * 1000,
+						z: posvel.velocity.z * 1000
+					}
+				};
+			} else if (msg.payload && typeof (msg.payload) === 'object' && msg.payload.length) {
+				msg.payload.forEach(function (t, i) {
+					var date = new Date(t);
 					posvel = satellite.propagate(satrec, date);
 					gmst = satellite.gstimeFromDate(date);
 					latlng = satellite.eciToGeodetic(posvel.position, gmst);
-					satellites = {
-						name: node.satid,
-						timestamp: msg.payload,
+					satellites.push({
+						name: node.satid + '-' + i,
+						timestamp: t,
 						position: {
 							x: posvel.position.x * 1000,
 							y: posvel.position.y * 1000,
@@ -48,39 +67,15 @@ module.exports = function (RED) {
 							y: posvel.velocity.y * 1000,
 							z: posvel.velocity.z * 1000
 						}
-					};
-				} else if (msg.payload && typeof (msg.payload) === 'object' && msg.payload.length) {
-					msg.payload.forEach(function (t, i) {
-						var date = new Date(t);
-						posvel = satellite.propagate(satrec, date);
-						gmst = satellite.gstimeFromDate(date);
-						latlng = satellite.eciToGeodetic(posvel.position, gmst);
-						satellites.push({
-							name: node.satid + '-' + i,
-							timestamp: t,
-							position: {
-								x: posvel.position.x * 1000,
-								y: posvel.position.y * 1000,
-								z: posvel.position.z * 1000,
-								lat: satellite.degreesLat(latlng.latitude),
-								lon: satellite.degreesLong(latlng.longitude),
-								alt: latlng.height * 1000
-							},
-							velocity: {
-								x: posvel.velocity.x * 1000,
-								y: posvel.velocity.y * 1000,
-								z: posvel.velocity.z * 1000
-							}
-						});
 					});
-				}
+				});
+			}
 
-				msg.payload = satellites;
-				node.send(msg);
-			});
-		}
-		RED.nodes.registerType("satellite", SatelliteNode);
-	});
+			msg.payload = satellites;
+			node.send(msg);
+		});
+	}
+	RED.nodes.registerType("satellite", SatelliteNode);
 
 	function TimeArrayNode(config) {
 		RED.nodes.createNode(this, config);

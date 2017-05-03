@@ -1,4 +1,4 @@
-node-red-contrib-satellites (v0.1.0)
+node-red-contrib-satellites (v0.1.1)
 =============================
 
 A set of <a href="http://nodered.org" target="_new">Node-RED</a> nodes to help working with Two-Line-Element (TLE) sets. Utilising the <a href="https://github.com/shashwatak/satellite-js">satellites.js</a> library to convert the TLE sets into <i>xyz</i> and <i>latlng</i> coordinates.
