@@ -1,23 +1,104 @@
 <script type="text/javascript">
+    const lists = {
+      "stations" : ["ISS (ZARYA)", "FLOCK 2E-1", "FLOCK 2E-5", "FLOCK 2E'-5", "FLOCK 2E'-13", "FLOCK 2E'-14", "FLOCK 2E'-16", "FLOCK 2E'-15", "TIANGONG-2", "FLOCK 2E'-18", "FLOCK 2E'-17", "FLOCK 2E'-19", "FLOCK 2E'-20", "BANXING-2", "ITF-2", "WASEDA-SAT3", "AOBA-VELOX 3", "LEMUR-2-REDFERN-GOES", "LEMUR-2-AUSTINTACIOUS", "LEMUR-2-TRUTNAHD", "HAVELSAT", "SGSAT", "CXBN-2", "ICECUBE", "PHOENIX", "X-CUBESAT", "QBEE50-LTU-OC", "ALTAIR PATHFINDER", "SHARC", "ZA-AEROSAT", "LINK", "CSUNSAT 1", "SPACECUBE", "HOOPOE", "CHALLENGER", "NJUST-1", "UNSW-ECO", "LILACSAT-1", "NSIGHT-1", "SNUSAT-1", "I-INSPIRE II", "POLYITAN-2-SAU", "SNUSAT-1B", "EXALTA-1", "BEEAGLESAT", "ASTERIA", "DELLINGR (RBLE)", "TECHEDSAT 6", "OSIRIS-3U", "SOYUZ-MS 07", "PROGRESS-MS 08", "SOYUZ-MS 08", "DRAGON CRS-14"],
+      "weather": ["NOAA 15", "METEOSAT-8 (MSG-1)", "NOAA 18", "METEOSAT-9 (MSG-2)", "HIMAWARI-7 (MTSAT-2)", "FORMOSAT-3 FM6", "FORMOSAT-3 FM1", "FORMOSAT-3 FM5", "FORMOSAT-3 FM3", "FORMOSAT-3 FM4", "FORMOSAT-3 FM2", "GOES 13", "METOP-A", "FENGYUN 2D", "FENGYUN 3A", "FENGYUN 2E", "NOAA 19", "GOES 14", "METEOR-M 1", "GOES 15", "COMS 1", "FENGYUN 3B", "SUOMI NPP", "FENGYUN 2F", "METEOSAT-10 (MSG-3)", "METOP-B", "FENGYUN 3C", "METEOR-M 2", "HIMAWARI-8", "FENGYUN 2G", "METEOSAT-11 (MSG-4)", "ELEKTRO-L 2", "HIMAWARI-9", "GOES 16", "FENGYUN 4A", "CYGFM05", "CYGFM04", "CYGFM02", "CYGFM01", "CYGFM08", "CYGFM06", "CYGFM07", "CYGFM03", "FENGYUN 3D", "NOAA 20"],
+      "glo-ops": ["COSMOS 2425 (716)", "COSMOS 2426 (717)", "COSMOS 2433 (720)", "COSMOS 2432 (719)", "COSMOS 2434 (721)", "COSMOS 2436 (723)", "COSMOS 2456 (730)", "COSMOS 2457 (733)", "COSMOS 2458 (734)", "COSMOS 2459 (731)", "COSMOS 2461 (735)", "COSMOS 2460 (732)", "COSMOS 2464 (736)", "COSMOS 2471 (701K)", "COSMOS 2474 (742)", "COSMOS 2476 (744)", "COSMOS 2477 (745)", "COSMOS 2475 (743)", "COSMOS 2485 (747)", "COSMOS 2492 (754)", "COSMOS 2500 (755)", "COSMOS 2501 (702K)", "COSMOS 2514 (751)", "COSMOS 2516 (753)", "COSMOS 2522 (752)"],
+      "galileo": ["GSAT0101 (PRN E11)", "GSAT0102 (PRN E12)", "GSAT0103 (PRN E19)", "GSAT0104 (PRN E20)", "GSAT0201 (PRN E18)", "GSAT0202 (PRN E14)", "GSAT0203 (PRN E26)", "GSAT0204 (PRN E22)", "GSAT0205 (PRN E24)", "GSAT0206 (PRN E30)", "GSAT0209 (PRN E09)", "GSAT0208 (PRN E08)", "GSAT0211 (PRN E02)", "GSAT0210 (PRN E01)", "GSAT0207 (PRN E07)", "GSAT0212 (PRN E03)", "GSAT0213 (PRN E04)", "GSAT0214 (PRN E05)", "GSAT0215 (PRN E21)", "GSAT0216 (PRN E25)", "GSAT0217 (PRN E27)", "GSAT0218 (PRN E31)"],
+      "gps-ops": ["GPS BIIA-23 (PRN 18)", "GPS BIIR-2  (PRN 13)", "GPS BIIR-3  (PRN 11)", "GPS BIIR-4  (PRN 20)", "GPS BIIR-5  (PRN 28)", "GPS BIIR-6  (PRN 14)", "GPS BIIR-8  (PRN 16)", "GPS BIIR-9  (PRN 21)", "GPS BIIR-10 (PRN 22)", "GPS BIIR-11 (PRN 19)", "GPS BIIR-12 (PRN 23)", "GPS BIIR-13 (PRN 02)", "GPS BIIRM-1 (PRN 17)", "GPS BIIRM-2 (PRN 31)", "GPS BIIRM-3 (PRN 12)", "GPS BIIRM-4 (PRN 15)", "GPS BIIRM-5 (PRN 29)", "GPS BIIRM-6 (PRN 07)", "GPS BIIRM-8 (PRN 05)", "GPS BIIF-1  (PRN 25)", "GPS BIIF-2  (PRN 01)", "GPS BIIF-3  (PRN 24)", "GPS BIIF-4  (PRN 27)", "GPS BIIF-5  (PRN 30)", "GPS BIIF-6  (PRN 06)", "GPS BIIF-7  (PRN 09)", "GPS BIIF-8  (PRN 03)", "GPS BIIF-9  (PRN 26)", "GPS BIIF-10  (PRN 08)", "GPS BIIF-11  (PRN 10)", "GPS BIIF-12  (PRN 32)"],
+      "sarsat" : ["SARSAT 7 (NOAA 15)", "GPS BIIR-07", "METEOSAT-8 (MSG-1)", "GPS BIIR-08", "GPS BIIR-11", "GPS BIIR-12", "GPS BIIR-13", "SARSAT 10 (NOAA 18)", "GPS BIIR-14M", "METEOSAT-9 (MSG-2)", "GOES 13", "SARSAT 11 (METOP-A)", "GPS BIIR-16M", "GPS BIIR-17M", "GPS BIIR-18M", "SARSAT 12 (NOAA 19)", "GOES 14", "GOES 15", "GLONASS-K 1", "GPS BIIF-2", "GSAT0101 (GALILEO-PFM)", "GSAT0102 (GALILEO-FM2)", "LUCH 5A", "METEOSAT-10 (MSG-3)", "SARSAT 13 (METOP-B)", "GPS BIIF-3", "GSAT0103 (GALILEO-FM3)", "GSAT0104 (GALILEO-FM4)", "GPS BIIF-4", "INSAT-3D", "GPS BIIF-5", "LUCH 5V", "GPS BIIF-6", "GPS BIIF-7", "GSAT0201 (GALILEO 5)", "GSAT0202 (GALILEO 6)", "GPS BIIF-8", "GLONASS-K 2", "GPS BIIF-9", "GSAT0203 (GALILEO 7)", "GSAT0204 (GALILEO 8)", "GPS BIIF-10", "METEOSAT-11 (MSG-4)", "GSAT0205 (GALILEO 9)", "GSAT0206 (GALILEO 10)", "GPS BIIF-11", "GSAT0209 (GALILEO 12)", "GSAT0208 (GALILEO 11)", "GPS BIIF-12", "GSAT0211 (GALILEO 14)", "GSAT0210 (GALILEO 13)", "GSAT0207 (GALILEO 15)", "GSAT0212 (GALILEO 16)", "GSAT0213 (GALILEO 17)", "GSAT0214 (GALILEO 18)", "GOES 16"],
+      "dmc" : ['BEIJING 1', 'HJ-1A', 'HJ-1B', 'YAOGAN 4', 'DEIMOS-1', 'UK-DMC 2', 'RISAT 1', 'DMC3-FM1', 'DMC3-FM2', 'DMC3-FM3' ],
+      "science": ["AKEBONO (EXOS-D)", "HST", "POLAR", "SWAS", "ORSTED", "CXO", "XMM-NEWTON", "TERRA", "CLUSTER II-FM7 (SAMBA)", "CLUSTER II-FM6 (SALSA)", "CLUSTER II-FM5 (RUMBA)", "CLUSTER II-FM8 (TANGO)", "ODIN", "TIMED", "RHESSI", "INTEGRAL", "CORIOLIS", "SORCE", "MOST", "SCISAT 1", "SWIFT", "FORMOSAT-3 FM6", "FORMOSAT-3 FM1", "FORMOSAT-3 FM5", "FORMOSAT-3 FM3", "FORMOSAT-3 FM4", "FORMOSAT-3 FM2", "CLOUDSAT", "CALIPSO", "HINODE (SOLAR-B)", "SJ-6C", "SJ-6D", "AGILE", "AIM", "FGRST (GLAST)", "WISE", "SDO", "CRYOSAT 2", "X-SAT", "GCOM-W1 (SHIZUKU)", "NUSTAR", "RBSP A", "RBSP B", "NEOSSAT", "IRIS", "HISAKI (SPRINT-A)", "CASSIOPE", "STSAT-3", "SWARM B", "SWARM A", "SWARM C", "BRITE-TORONTO", "OCO 2", "BRITE-PL 2", "RESURS P2", "MMS 1", "MMS 2", "MMS 3", "MMS 4", "ASTROSAT", "DAMPE", "PISAT", "HXMT (HUIYAN)", "FLYING LAPTOP", "PICSAT", "ZHANGZHENG-1 (CSES)"]
+    };
+
+    function selectType() {
+      var type = $("#node-input-sattype").val();
+      loadList(type);
+    }
+
+    function loadList(type) {
+      $("#node-input-satid").children().remove();
+      $.each(lists[type], function(s) {
+        $("#node-input-satid").append($('<option>', {
+            value: lists[type][s],
+            text: lists[type][s]
+        }));
+      })
+    }
+    loadList('stations');
+
     RED.nodes.registerType('satellite',{
         category: 'satellites',
         color: '#878787',
         defaults: {
-            satid: {value:""},
-            tle1: {value:""},
-            tle2: {value:""},
+            sattype: {value:"stations", required: true},
+            satid: {value:"", required: true},
             name: {value:""}
         },
         inputs:1,
         outputs:1,
         icon: "satellite.png",
         label: function() {
-            return this.name || "satellite";
+            return this.satid || "satellite";
         }
     });
 </script>
 
 <script type="text/x-red" data-template-name="satellite">
+    <div class="form-row">
+  		<label for="node-input-sattype"><i class="icon-tag"></i> Sat. Type</label>
+  		<select id ="node-input-sattype" style="width: 70%;" onchange="selectType();">
+  			<option value="stations" selected>Space Stations</option>
+  			<option value="weather">Weather</option>
+  			<option value="science">Space & Earth Science</option>
+  			<option value="sarsat">Search & Rescue</option>
+  			<option value="dmc">Disaster Relief</option>
+  			<option value="gps-ops">GPS</option>
+  			<option value="galileo">Galileo</option>
+        <option value="glo-ops">GLONASS</option>
+  		</select>
+  	</div>
+    </div>
+    <div class="form-row">
+  		<label for="node-input-satid"><i class="icon-tag"></i> Satellite</label>
+  		<select id ="node-input-satid" style="width: 70%;"></select>
+  	</div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="satellite">
+	<p>A node that takes an (optional) timestamp input and provides the respective position ({x,y,z} and {lat,lon,alt}) and velocity ({x,y,z}) of the selected satellite.</p>
+	<p>If no timestamp is provided, the current datetime is used.</p>
+	<p>The input can also be an array of timestamps, for which, the output will be an array of positions and velocities at each of those times.</p>
+	<p><strong>Units - Position</strong></p>
+	<p>The <code>x</code>, <code>y</code>, <code>z</code> and <code>alt</code> values in expressed in metres and the <code>lat</code> and <code>lon</code> values are in degrees.
+	<p><strong>Units - Velocity</strong></p>
+	<p>The <code>x</code>, <code>y</code> and <code>z</code> values in expressed in metres/second.
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('tle',{
+        category: 'satellites',
+        color: '#878787',
+        defaults: {
+            satid: {value:""},
+            tle1: {value:""},
+            tle2: {value:""},
+            coordsys: {value:""},
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "satellite.png",
+        label: function() {
+            return this.name || "TLE";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="tle">
     <div class="form-row">
         <label for="node-input-satid"><i class="icon-tag"></i> Sat. Name</label>
         <input type="text" id="node-input-satid" placeholder="e.g. 'ISS'">
@@ -31,27 +112,35 @@
         <input type="text" id="node-input-tle2" placeholder="2 25544 051.6485 199.1576 0010128 012.7275 352.5669 15.50581403831869">
     </div>
     <div class="form-row">
+  		<label for="node-input-coordsys"><i class="icon-tag"></i> Coords</label>
+  		<select id ="node-input-coordsys" >
+  			<option value="euclid3d">Euclidean 3D</option>
+  			<option value="latlongdeg">Lat/Long (degrees)</option>
+  			<option value="latlongrad">Lat/Long (radians)</option>
+  		</select>
+  	</div>
+    <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="satellite">
-	<p>A node to convert TLE data into position ({x,y,z} and {lat,lon,alt}) and velocity ({x,y,z}) data given an (optional) timestamp input.</p>
+<script type="text/x-red" data-help-name="tle">
+	<p>A node to convert TLE data into position ({x,y,z} and {lat,lon,alt}) and velocity ({x,y,z}) given an (optional) timestamp input.</p>
 	<p>If no timestamp is provided, the current datetime is used.</p>
 	<p>The input can also be an array of timestamps, for which, the output will be an array of positions and velocities at each of those times.</p>
 	<p><strong>Units - Position</strong></p>
 	<p>The <code>x</code>, <code>y</code>, <code>z</code> and <code>alt</code> values in expressed in metres and the <code>lat</code> and <code>lon</code> values are in degrees.
 	<p><strong>Units - Velocity</strong></p>
 	<p>The <code>x</code>, <code>y</code> and <code>z</code> values in expressed in metres/second.
-	<p><strong>Orbit Data</strong></p>
+	<p><strong>Orbit (TLE) Data</strong></p>
 	<p>TLE data is available at <a href="https://www.celestrak.com/NORAD/elements/" target="_blank">celestrak</a>, including a space station data set found <a href="https://www.celestrak.com/NORAD/elements/stations.txt" target="_blank">here</a></p>
 </script>
 
 <script type="text/javascript">
     RED.nodes.registerType('timearray',{
         category: 'satellites',
-        color: '#878787',
+        color: 'rgb(166, 187, 207)',
         defaults: {
             plus: {value:0},
             minus: {value:0},
@@ -61,7 +150,7 @@
         inputs: 1,
         outputs: 1,
         icon: "clock.png",
-		paletteLabel: 'time array',
+		    paletteLabel: 'time array',
         label: function() {
             return this.name || "time array";
         }
