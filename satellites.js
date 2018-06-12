@@ -136,7 +136,14 @@ module.exports = function (RED) {
 			let tle1 = '', tle2 = '';
 			loadRemoteTLEData(node.sattype)
 				.then(function(sat) {
-					var satrec = satellite.twoline2satrec(sat.tle1, sat.tle2);
+                    var satrec;
+                    try {
+    					satrec = satellite.twoline2satrec(sat.tle1, sat.tle2);
+                    }
+                    catch(e) {
+                        //Swallow the error
+                        //node.warn("Cannot decode satellite TLE data.")
+                    }
 					if (msg.payload && typeof (msg.payload) === 'number') {
 						// Single timestamp
 						satellites = createSatObject(node.satid, satrec, msg.payload);
@@ -185,15 +192,13 @@ module.exports = function (RED) {
 
 		node.on('input', function (msg) {
 			var times = [];
-			if (node.samples < 1) {
-				node.samples = 1;
-			}
+			if (node.samples < 1) { node.samples = 1; }
 			var t = parseInt(msg.payload),
 				t0 = t - node.minus,
 				t1 = t + node.plus,
-				delta = (t1 - t0) / node.samples;
+				delta = (t1 - t0 + 1) / node.samples;
 
-			for (var i = 0; i < node.samples; i++) {
+			for (var i = 0; i <= node.samples; i++) {
 				var time = t0 + i * delta;
 				times.push(parseInt(time));
 			}
@@ -201,7 +206,6 @@ module.exports = function (RED) {
 			msg.payload = times;
 			node.send(msg);
 		});
-
 	}
 	RED.nodes.registerType("timearray", TimeArrayNode);
 

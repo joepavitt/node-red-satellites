@@ -140,7 +140,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('timearray',{
         category: 'satellites',
-        color: 'rgb(166, 187, 207)',
+        color: '#878787',
         defaults: {
             plus: {value:0},
             minus: {value:0},
@@ -177,10 +177,8 @@
 </script>
 
 <script type="text/x-red" data-help-name="timearray">
-    <div>
-		Given an input of a single timestamp, this node will output an array, length <code>samples</code>,
-        of timestamps ranging from <code>msg.payload - minus</code> to <code>msg.payload + plus</code>
-	</div>
+    <p>Given an input of a single timestamp, this node will output an array, length <code>samples</code>,
+    of timestamps ranging from <code>msg.payload - minus</code> to <code>msg.payload + plus</code></p>
 </script>
 
 <script type="text/javascript">
@@ -192,6 +190,7 @@
         },
         inputs:1,
         outputs:0,
+        align: "right",
         icon: "white-globe.png",
         label: function() {
             return this.name || "earth";
