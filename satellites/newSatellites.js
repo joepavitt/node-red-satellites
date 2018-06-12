@@ -119,6 +119,7 @@ Earth.prototype.setLine = function (name, data, color) {
         var p = latLonAlt2pos( data[i].position.lat, data[i].position.lon, data[i].position.alt );
         geometry.vertices.push(new THREE.Vector3(p.px,p.py,p.pz));
     }
+    this.remove(lines[name]);
     lines[name] = new THREE.Line( geometry, material );
     lines[name].name = name;
     this.add(lines[name]);
