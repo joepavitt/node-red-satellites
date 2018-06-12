@@ -13,7 +13,7 @@ button{
 
 #info {
     width: 100%;
-    height: 50px;
+    height: 40px;
     text-align: center;
     color: white;
     font-family: Verdana;
@@ -28,4 +28,5 @@ table {
 .list {
     color: white;
     font-family: Verdana;
+    font-size: smaller;
 }

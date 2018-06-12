@@ -36,8 +36,21 @@ ws.on('earthdata', function (data) {
     //console.log("DATA",data);
     if (data.name) {
         if (data.deleted) { earth.delMarker(data.name); return; }
-        var pos = data.position;
+        var pos;
+        if (data.hasOwnProperty("position")) { pos = data.position; }
+        else if (data.hasOwnProperty("lat") && data.hasOwnProperty("lon")) {
+            pos = {lat:data.lat, lon:data.lon, alt:data.alt || 0 }
+        }
+        else {
+            console.log("Bad Data:",data);
+            return;
+        }
+
         earth.setMarker(data.name, pos.lat, pos.lon, pos.alt, data.color);
+        if (data.hasOwnProperty("velocity")) {
+            var v = data.velocity;
+            markers[data.name].velocity = Math.round(Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z));
+        }
         if (data.name === rideWith) {
             var m = markers[data.name].position;
             controls.autoRotate = false;
@@ -46,9 +59,9 @@ ws.on('earthdata', function (data) {
         render();
     }
     else {  //maybe it's an array of points for a line
-        if (data.deleted) { earth.delLine(data[0].name+"_"); return; }
+        if (data.deleted) { earth.delLine(data[0].name); return; }
         if (data.length > 2) {
-            var name = data[0].name+"_";
+            var name = data[0].name;
             earth.setLine(name,data);
         }
     }
@@ -62,13 +75,16 @@ function Marker(color) {
     var radius = 0.005;
     var sphereRadius = 0.02;
     var height = 0.05;
-    var material = new THREE.MeshPhongMaterial({ color:color||"white" });
+    this.material = new THREE.MeshPhongMaterial({ color:color||"white" });
+    this.material.oldR = this.material.color.r;
+    this.material.oldG = this.material.color.g;
+    this.material.oldB = this.material.color.b;
 
-    var cone = new THREE.Mesh(new THREE.ConeBufferGeometry(radius, height, 8, 1, true), material);
+    var cone = new THREE.Mesh(new THREE.ConeBufferGeometry(radius, height, 8, 1, true), this.material);
     cone.position.y = height * 0.5;
     cone.rotation.x = Math.PI;
 
-    var sphere = new THREE.Mesh(new THREE.SphereBufferGeometry(sphereRadius, 16, 8), material);
+    var sphere = new THREE.Mesh(new THREE.SphereBufferGeometry(sphereRadius, 16, 8), this.material);
     sphere.position.y = height * 0.95 + sphereRadius;
 
     this.add(cone, sphere);
@@ -235,7 +251,21 @@ function rowclick(e) {
     var m = markers[e].position;
     controls.autoRotate = false;
     camera.position.set(m.x,m.y,m.z);
-    document.getElementById("info").textContent="Riding along with the "+e;
+    document.getElementById("info").textContent="Tracking along with the "+e;
+}
+
+function rowover(e) {
+    markers[e].material.color.setHex(0xff0000);
+    if (lines.hasOwnProperty(e+"-0")) {
+        lines[e+"-0"].material.color.setHex(0xff0000);
+    }
+}
+
+function rowout(e) {
+    markers[e].material.color.setRGB(markers[e].material.oldR,markers[e].material.oldG,markers[e].material.oldB);
+    if (lines.hasOwnProperty(e+"-0")) {
+        lines[e+"-0"].material.color.setRGB(markers[e].material.oldR,markers[e].material.oldG,markers[e].material.oldB);
+    }
 }
 
 function createTable(){
@@ -243,7 +273,7 @@ function createTable(){
     var intab = ""
     for (var key in markers) {
         if (markers.hasOwnProperty(key)) {
-            intab += '<tr><td class="list" onclick=\'rowclick(\"'+key+'\")\'>' + key + '</td></tr>';
+            intab += '<tr><td class="list" onmouseover=\'rowover(\"'+key+'\")\' onmouseout=\'rowout(\"'+key+'\")\' onclick=\'rowclick(\"'+key+'\")\'>' + key + '</td><td>'+markers[key].velocity+'m/s</td></tr>';
         }
     }
     document.getElementById("objects").innerHTML = intab;
