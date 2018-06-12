@@ -273,7 +273,7 @@ function createTable(){
     var intab = ""
     for (var key in markers) {
         if (markers.hasOwnProperty(key)) {
-            intab += '<tr><td class="list" onmouseover=\'rowover(\"'+key+'\")\' onmouseout=\'rowout(\"'+key+'\")\' onclick=\'rowclick(\"'+key+'\")\'>' + key + '</td><td>'+markers[key].velocity+'m/s</td></tr>';
+            intab += '<tr onmouseover=\'rowover(\"'+key+'\")\' onmouseout=\'rowout(\"'+key+'\")\' onclick=\'rowclick(\"'+key+'\")\'><td class="list">' + key + '</td><td>'+markers[key].velocity+'m/s</td></tr>';
         }
     }
     document.getElementById("objects").innerHTML = intab;

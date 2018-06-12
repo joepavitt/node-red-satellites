@@ -7,10 +7,6 @@ body {
   position: absolute;
 }
 
-button{
-  margin: 20px;
-}
-
 #info {
     width: 100%;
     height: 40px;
@@ -19,14 +15,18 @@ button{
     font-family: Verdana;
 }
 
-table {
+.sattable {
     position: absolute;
     cursor: pointer;
     margin-right: 8px;
+    border-collapse: collapse;
 }
-
-.list {
+.sattable td {
     color: white;
     font-family: Verdana;
-    font-size: smaller;
+    font-size: small;
+    padding: 4px;
+}
+.sattable tr:hover {
+    background-color: #666;
 }
