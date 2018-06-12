@@ -2,3 +2,30 @@ body {
 	margin: 0px;
 	overflow: hidden;
 }
+
+.ui {
+  position: absolute;
+}
+
+button{
+  margin: 20px;
+}
+
+#info {
+    width: 100%;
+    height: 50px;
+    text-align: center;
+    color: white;
+    font-family: Verdana;
+}
+
+table {
+    position: absolute;
+    cursor: pointer;
+    margin-right: 8px;
+}
+
+.list {
+    color: white;
+    font-family: Verdana;
+}

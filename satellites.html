@@ -178,7 +178,8 @@
 
 <script type="text/x-red" data-help-name="timearray">
     <div>
-		Given an input of a single timestamp, this node will output an array, length <code>samples</code>, of timestamps ranging from <code>msg.payload - minus</code> to <code>msg.payload + plus</code>
+		Given an input of a single timestamp, this node will output an array, length <code>samples</code>,
+        of timestamps ranging from <code>msg.payload - minus</code> to <code>msg.payload + plus</code>
 	</div>
 </script>
 
@@ -207,24 +208,19 @@
 
 <script type="text/x-red" data-help-name="earth">
     <div>
-		<label>Open Earth View</label>
-		<a href="/earth" class="editor-button" style="margin-left: 10px;" target="_blank">
-			<i class="fa fa-external-link"></i>
-		</a>
+		<label>Open Earth View <a href="/earth" style="margin-left:8px; color:#888;" target="_blank">
+		<i class="fa fa-external-link"></i></a></label>
 	</div>
-	<p>A 3d viewer for Earth and any satellites that are input here.</p>
-	<p>The minimum <code>msg.payload</code> must contain <code>name</code>, <code>position</code> and <code>velocity</code> properties, e.g.</p>
+	<p>A 3D viewer for Earth and any satellites that are input here.</p>
+	<p>The minimum <code>msg.payload</code> must contain <code>name</code> and <code>position</code> properties, e.g.</p>
 	<pre>{
-name : "ISS",
+"name" : "ISS",
 "position": {
-	"x": 3720.74,
-	"y": 2148.92,
-	"z": 5236.12
-},
-"velocity": {
-	"x": -2.7,
-	"y": 7.1,
-	"z": -1.0
+	"lat": 51.05,
+	"lon": -1.35,
+	"alt": 41300
 }}</pre>
-	<p>Optionally, you can also include a <code>color</code> property, which will override the default color of the sphere's rendered for a given plotted object.</p>
+    <p><code>lat</code> and <code>lon</code> are in decimal degress and <code>alt</code> is in meters above the mean sea level.</p>
+	<p>Optionally, you can also include a <code>color</code> property, which will set the colour of the marker.</p>
+    <p>If an array of 2 or more points is sent, they are plotted as a line without any marker.</p>
 </script>

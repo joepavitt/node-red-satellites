@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <!--
-  Copyright 2015, 2017 IBM Corp.
+  Copyright 2015, 2018 IBM Corp.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -15,28 +15,24 @@
   limitations under the License.
 -->
 <html>
-
 <head>
 	<title>Node-RED Earth 3D</title>
 	<meta name="mobile-web-app-capable" content="yes">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-
 	<link rel="shortcut icon" type="image/ico" href="favicon.ico"/>
 
 	<script type="text/javascript" src="socketio/socket.io-1.7.3.min.js"></script>
-
-	<script type="text/javascript" src="threejs/build/three.min.js"></script>
-	<script type="text/javascript" src="threejs-controls/trackball-controls.js"></script>
-
-	<script type="text/javascript" src="satellites.js"></script>
+	<script type="text/javascript" src="three.min.js"></script>
+	<!-- <script type="text/javascript" src="threejs-controls/trackball-controls.js"></script>
+	<script type="text/javascript" src="satellites.js"></script> -->
+    <script type="text/javascript" src="threejs-controls/orbit-controls.js"></script>
+    <script type="text/javascript" src="newSatellites.js"></script>
 
 	<link rel="stylesheet" href="common.css">
 </head>
-
 <body onload="init(); animate();">
-	<script type="text/javascript">
-		
-	</script>
+    <div id="info" class="ui">spacebar to pause/unpause</div>
+    <!-- <button id="MENU" class="ui" style="right:0" >MENU</button> -->
+    <table id="objects" class="list" style="top:40px; right:0px"></table>
 </body>
-
 </html>
