@@ -22,13 +22,13 @@ Please note that TLE Data for a given satellite does change, and so the TLE data
 
 #### `./examples/ISS 3d.json`
 
-![ISS 3d Example](./screenshots/screens/iss.png "ISS - 3d Example")
+![ISS 3d Example](./screenshots/iss3d.png "ISS - 3d Example")
 
 This flow will calculate the current *xyz* position of the ISS, using the relevant TLE data in the `satellite` node. The data is then fed into the `earth` node for visualisation.
 
 #### `./examples/ISS worldmap.json`
 
-![ISS World Map Example](./screenshots/screens/iss-worldmap.png "ISS - World Map Example")
+![ISS World Map Example](./screenshots/iss-worldmap.png "ISS - World Map Example")
 
 ***note***: *This example has a dependancy on the `node-red-contrib-web-worldmap` node.*
 
@@ -38,7 +38,7 @@ The `time array` node is used to calculate the timestamps for +/- 10 minutes fro
 
 #### `./examples/GPS constellation.json`
 
-![GPS World Map Example](./screenshots/screens/gps-constellation.png "GPS - World Map Example")
+![GPS World Map Example](./screenshots/gps-constellation.png "GPS - World Map Example")
 
 ***note***: *This example has a dependancy on the `node-red-contrib-web-worldmap` node.*
 
