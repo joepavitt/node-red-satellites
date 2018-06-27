@@ -26,13 +26,17 @@
 	<!-- <script type="text/javascript" src="threejs-controls/trackball-controls.js"></script>
 	<script type="text/javascript" src="satellites.js"></script> -->
     <script type="text/javascript" src="threejs-controls/orbit-controls.js"></script>
-    <script type="text/javascript" src="newSatellites.js"></script>
+    <script type="text/javascript" src="satellites.js"></script>
 
 	<link rel="stylesheet" href="common.css">
 </head>
 <body onload="init(); animate();">
     <div id="info" class="ui">spacebar to pause/unpause</div>
     <!-- <button id="MENU" class="ui" style="right:0" >MENU</button> -->
-    <table id="objects" class="sattable" style="top:40px; right:0px"></table>
+		<div class="sattable-container">
+			<h2>Tracking:</h2>
+			<table id="objects" class="sattable" ></table>
+		</div>
+
 </body>
 </html>
