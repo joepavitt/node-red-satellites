@@ -212,7 +212,7 @@ module.exports = function (RED) {
 	function EarthNode(config) {
 		RED.nodes.createNode(this, config);
 		if (!socket) {
-			var fullPath = path.join(RED.settings.httpNodeRoot, 'earth', 'socket.io');
+			var fullPath = path.posix.join(RED.settings.httpNodeRoot, 'earth', 'socket.io');
 			socket = io.listen(RED.server, {
 				path: fullPath
 			});
