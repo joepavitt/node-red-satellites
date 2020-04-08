@@ -43,7 +43,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="satellite">
+<script type="text/html" data-template-name="satellite">
     <div class="form-row">
   		<label for="node-input-sattype"><i class="icon-tag"></i> Sat. Type</label>
   		<select id ="node-input-sattype" style="width: 70%;" onchange="selectType();">
@@ -68,7 +68,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="satellite">
+<script type="text/html" data-help-name="satellite">
 	<p>A node that takes an (optional) timestamp input and provides the respective position ({x,y,z} and {lat,lon,alt}) and velocity ({x,y,z}) of the selected satellite.</p>
 	<p>If no timestamp is provided, the current datetime is used.</p>
 	<p>The input can also be an array of timestamps, for which, the output will be an array of positions and velocities at each of those times.</p>
@@ -98,7 +98,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="tle">
+<script type="text/html" data-template-name="tle">
     <div class="form-row">
         <label for="node-input-satid"><i class="icon-tag"></i> Sat. Name</label>
         <input type="text" id="node-input-satid" placeholder="e.g. 'ISS'">
@@ -125,7 +125,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="tle">
+<script type="text/html" data-help-name="tle">
 	<p>A node to convert TLE data into position ({x,y,z} and {lat,lon,alt}) and velocity ({x,y,z}) given an (optional) timestamp input.</p>
 	<p>If no timestamp is provided, the current datetime is used.</p>
 	<p>The input can also be an array of timestamps, for which, the output will be an array of positions and velocities at each of those times.</p>
@@ -157,7 +157,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="timearray">
+<script type="text/html" data-template-name="timearray">
     <div class="form-row" style="margin-left: 100px; width: 70%">
 		<label style="width: 70px; margin-right: 10px;" for="node-input-minus"><strong>+/-</strong> Minus</label>
 		<input style="width: calc(40% - 120px)" type="number" id="node-input-minus" placeholder="0" min="0">
@@ -176,7 +176,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="timearray">
+<script type="text/html" data-help-name="timearray">
     <p>Given an input of a single timestamp, this node will output an array, length <code>samples</code>,
     of timestamps ranging from <code>msg.payload - minus</code> to <code>msg.payload + plus</code></p>
 </script>
@@ -198,14 +198,14 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="earth">
+<script type="text/html" data-template-name="earth">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="earth">
+<script type="text/html" data-help-name="earth">
     <div>
 		<label>Open Earth View <a href="/earth" style="margin-left:8px; color:#888;" target="_blank">
 		<i class="fa fa-external-link"></i></a></label>
