@@ -74,25 +74,27 @@ module.exports = function (RED) {
 
 		this.on('input', function (msg) {
 			var satellites = [];
-        // override tle1 if passed suitable value
-            if  ('satid' in msg)  {
-                if ( (typeof msg.satid === 'string') && (msg.satid.length < 1024) ) {
-                    node.satid = msg.satid
+        
+		// override satid if node value not filled in and passed suitable value
+                if  ( (node.satid == '') && ('satid' in msg) )  {
+                    if ( (typeof msg.satid === 'string') && (msg.satid.length < 1024) ) {
+                        node.satid = msg.satid
+                    }
                 }
-            }
-        // override tle1 if passed suitable value
-            if  ('tle1' in msg)  {
-                if ( (typeof msg.tle1 === 'string') && (msg.tle1.length < 1024) ) {
-                    node.tle1 = msg.tle1
+		// override tle1 if node value not filled in and passed suitable value
+                if  ( (node.tle1 == '') && ('tle1' in msg) )  {
+                    if ( (typeof msg.tle1 === 'string') && (msg.tle1.length < 1024) ) {
+                        node.tle1 = msg.tle1
+                    }
                 }
-            }
-        // override tle1 if passed suitable value
-            if  ('tle2' in msg)  {
-                if ( (typeof msg.tle2 === 'string') && (msg.tle2.length < 1024) ) {
-                    node.tle2 = msg.tle2
+		// override tle2 if node value not filled in and passed suitable value
+                if  ( (node.tle2 == '') && ('tle2' in msg) )  {
+                    if ( (typeof msg.tle2 === 'string') && (msg.tle2.length < 1024) ) {
+                        node.tle2 = msg.tle2
+                    }
                 }
-            }
 
+			
 			// Initialize a satellite record
 			var satrec = satellite.twoline2satrec(node.tle1, node.tle2);
 
