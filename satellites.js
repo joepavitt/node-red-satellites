@@ -22,9 +22,9 @@ module.exports = function (RED) {
                             let s = {};
                             s.name = lines[i].replace("\n", "").trim();
                             i++;
-                            s.tle1 = lines[i].replace("\n", "");
+                            s.tle1 = lines[i].replace("\n", "").trim();
                             i++;
-                            s.tle2 = lines[i].replace("\n", "");
+                            s.tle2 = lines[i].replace("\n", "").trim();
                             sats.push(s);
                         }
                     }
@@ -35,10 +35,10 @@ module.exports = function (RED) {
     }
 
     function createSatObject(id, satrec, timestamp) {
-        var date = new Date(timestamp),
-            posvel = satellite.propagate(satrec, date),
-            gmst = satellite.gstimeFromDate(date),
-            latlng = satellite.eciToGeodetic(posvel.position, gmst);
+        var date = new Date(timestamp);
+        var posvel = satellite.propagate(satrec, date);
+        var gmst = satellite.gstimeFromDate(date);
+        var latlng = satellite.eciToGeodetic(posvel.position, gmst);
 
         return {
             name: id,
@@ -74,38 +74,43 @@ module.exports = function (RED) {
 
         this.on('input', function (msg) {
             var satellites = [];
-        
+
             // override satid if node value not filled in and passed suitable value
             if  ( (node.satid == '') && ('satid' in msg) )  {
                 if ( (typeof msg.satid === 'string') && (msg.satid.length < 1024) ) {
-                    node.satid = msg.satid
+                    node.satid = msg.satid = msg.satid.trim();
                 }
             }
             // override tle1 if node value not filled in and passed suitable value
             if  ( (node.tle1 == '') && ('tle1' in msg) )  {
                 if ( (typeof msg.tle1 === 'string') && (msg.tle1.length < 1024) ) {
-                    node.tle1 = msg.tle1
+                    node.tle1 = msg.tle1 = msg.tle1.trim();
                 }
             }
             // override tle2 if node value not filled in and passed suitable value
             if  ( (node.tle2 == '') && ('tle2' in msg) )  {
                 if ( (typeof msg.tle2 === 'string') && (msg.tle2.length < 1024) ) {
-                    node.tle2 = msg.tle2
+                    node.tle2 = msg.tle2 = msg.tle2.trim();
                 }
             }
-			
+
             // Initialize a satellite record
             var satrec = satellite.twoline2satrec(node.tle1, node.tle2);
 
             if (msg.payload && typeof (msg.payload) === 'number') {
                 // Single timestamp
                 satellites = createSatObject(node.satid, satrec, msg.payload);
-            } 
-            else if (msg.payload && typeof (msg.payload) === 'object' && msg.payload.length) {
+            }
+            else if (msg.payload && Array.isArray(msg.payload) && msg.payload.length) {
                 // Array of timestamps
                 msg.payload.forEach(function (t, i) {
-                    satellites.push(createSatObject(node.satid + '-' + i, satrec, t));
+                    if (typeof t === "number") {
+                        satellites.push(createSatObject(node.satid + '-' + i, satrec, t));
+                    }
                 });
+            } else {
+                // No payload - so now
+                satellites = createSatObject(node.satid, satrec, Date.now());
             }
 
             msg.payload = satellites;
@@ -158,7 +163,7 @@ module.exports = function (RED) {
                 .then(function(sat) {
                     var satrec;
                     try {
-    					satrec = satellite.twoline2satrec(sat.tle1, sat.tle2);
+                        satrec = satellite.twoline2satrec(sat.tle1, sat.tle2);
                     }
                     catch(e) {
                         //Swallow the error

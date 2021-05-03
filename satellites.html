@@ -128,8 +128,8 @@
 </script>
 
 <script type="text/html" data-help-name="tle">
-	<p>A node to convert TLE data into position ({x,y,z} and {lat,lon,alt}) and velocity ({x,y,z}) given an (optional) timestamp input.</p>
-	<p>If no timestamp is provided, the current datetime is used.</p>
+	<p>A node to convert TLE data into position ({x,y,z} and {lat,lon,alt}) and velocity ({x,y,z}) given an (optional) timestamp <code>payload</code>.</p>
+	<p>If no <code>payload</code> is provided, the current datetime is used.</p>
 	<p>The input can also be an array of timestamps, for which, the output will be an array of positions and velocities at each of those times.</p>
 	<p><strong>Units - Position</strong></p>
 	<p>The <code>x</code>, <code>y</code>, <code>z</code> and <code>alt</code> values in expressed in metres and the <code>lat</code> and <code>lon</code> values are in degrees.
