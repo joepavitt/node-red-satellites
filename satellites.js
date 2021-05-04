@@ -103,11 +103,14 @@ module.exports = function (RED) {
             }
             else if (msg.payload && Array.isArray(msg.payload) && msg.payload.length) {
                 // Array of timestamps
+                var ok = true;
                 msg.payload.forEach(function (t, i) {
                     if (typeof t === "number") {
                         satellites.push(createSatObject(node.satid + '-' + i, satrec, t));
                     }
+                    else { ok = false; }
                 });
+                if (!ok) { satellites = createSatObject(node.satid, satrec, Date.now()); }
             } else {
                 // No payload - so now
                 satellites = createSatObject(node.satid, satrec, Date.now());
