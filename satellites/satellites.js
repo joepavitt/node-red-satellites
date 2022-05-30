@@ -190,7 +190,6 @@ Earth.prototype = Object.create(THREE.Object3D.prototype);
 Earth.prototype.setMarker = function (name, lat, lon, alt, color) {
     var p = latLonAlt2pos(lat,lon,alt);
     if (!markers[name]) {
-        console.log("NAME",name);
         if (name.indexOf("ISS" !== -1)) { markers[name] = new ISS(color); }
         else { markers[name] = new Satellite(color); }
         markers[name].name = name;

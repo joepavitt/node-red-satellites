@@ -7,12 +7,10 @@ The list of satellites, and associated TLE data is retrieved from [NORAD](https:
 
 ## Changelog
 
-v0.7.3
+v0.7.4
  - change default images of earth to higher res versions
  - change default icon to be a generic satellite, add ISS icon (if marker name contains ISS)
-
-v0.7.0
- - Swap to sockjs llibrary as it seems more stable
+ - Swap to sockjs library as it seems more stable
 
 v0.5.0
  - Add Planet Labs satellites to the dropdown list
