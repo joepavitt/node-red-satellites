@@ -91,6 +91,81 @@ function Marker(color) {
 }
 Marker.prototype = Object.create(THREE.Object3D.prototype);
 
+// ------ Generic Satellite object --------------------------------------------
+
+function Satellite(color) {
+    THREE.Object3D.call(this);
+    var radius = 0.005;
+    var length = 0.01;
+    var height = 0.03;
+    this.material = new THREE.MeshPhongMaterial({ color:color||"white" });
+    this.material.oldR = this.material.color.r;
+    this.material.oldG = this.material.color.g;
+    this.material.oldB = this.material.color.b;
+
+    var thing = new THREE.Mesh(new THREE.CylinderBufferGeometry(radius, radius, length, 10 ), this.material);
+    thing.position.y = height * 0.5;
+    thing.rotation.x = Math.PI/4;
+
+
+    var thing2 = new THREE.Mesh(new THREE.BoxBufferGeometry(height*2, radius/4, radius*2), this.material);
+    thing2.position.y = height * 0.5;
+    thing2.rotation.y = Math.PI/4;
+
+    this.add(thing,thing2);
+}
+Satellite.prototype = Object.create(THREE.Object3D.prototype);
+
+// ------ ISS object ------------------------------------------------
+
+function ISS(color) {
+    THREE.Object3D.call(this);
+    var width = 0.01;
+    var depth = 0.01;
+    var height = 0.03;
+    this.material = new THREE.MeshPhongMaterial({ color:color||"white" });
+    this.material.oldR = this.material.color.r;
+    this.material.oldG = this.material.color.g;
+    this.material.oldB = this.material.color.b;
+
+    var thing = new THREE.Mesh(new THREE.CylinderBufferGeometry(width/1.5, width/1.5, height, 16), this.material);
+    thing.position.y = height * 0.5;
+    thing.position.x = - height * 0.25;
+    thing.rotation.x = Math.PI/2;
+
+    var thing2 = new THREE.Mesh(new THREE.BoxBufferGeometry(width, height/2, depth), this.material);
+    thing2.position.y = height * 0.5;
+    thing2.position.x = height * 0.25;
+    thing2.rotation.x = Math.PI/2;
+
+    var thing3 = new THREE.Mesh(new THREE.BoxBufferGeometry(width, height*3, depth/10), this.material);
+    thing3.position.y = height * 0.5;
+    thing3.position.x = height * 1.2;
+    thing3.rotation.x = Math.PI/4;
+
+    var thing4 = new THREE.Mesh(new THREE.BoxBufferGeometry(width, height*3, depth/10), this.material);
+    thing4.position.y = height * 0.5;
+    thing4.position.x = - height * 1.2;
+    thing4.rotation.x = Math.PI/4;
+
+    var thing5 = new THREE.Mesh(new THREE.BoxBufferGeometry(width, height*3, depth/10), this.material);
+    thing5.position.y = height * 0.5;
+    thing5.position.x = height * 1.7;
+    thing5.rotation.x = Math.PI/4;
+
+    var thing6 = new THREE.Mesh(new THREE.BoxBufferGeometry(width, height*3, depth/10), this.material);
+    thing6.position.y = height * 0.5;
+    thing6.position.x = - height * 1.7;
+    thing6.rotation.x = Math.PI/4;
+
+    var thing7 = new THREE.Mesh(new THREE.BoxBufferGeometry(depth/4, height*4, depth/4), this.material);
+    thing7.position.y = height * 0.5;
+    thing7.rotation.z = Math.PI/2;
+
+    this.add(thing,thing2,thing3,thing4,thing5,thing6,thing7);
+}
+ISS.prototype = Object.create(THREE.Object3D.prototype);
+
 // ------ Earth object -------------------------------------------------
 
 function Earth(radius, texture, relief, spec) {
@@ -115,7 +190,9 @@ Earth.prototype = Object.create(THREE.Object3D.prototype);
 Earth.prototype.setMarker = function (name, lat, lon, alt, color) {
     var p = latLonAlt2pos(lat,lon,alt);
     if (!markers[name]) {
-        markers[name] = new Marker(color);
+        console.log("NAME",name);
+        if (name.indexOf("ISS" !== -1)) { markers[name] = new ISS(color); }
+        else { markers[name] = new Satellite(color); }
         markers[name].name = name;
         this.add(markers[name]);
     }

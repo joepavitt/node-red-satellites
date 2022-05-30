@@ -7,8 +7,9 @@ The list of satellites, and associated TLE data is retrieved from [NORAD](https:
 
 ## Changelog
 
-v0.7.2
+v0.7.3
  - change default images of earth to higher res versions
+ - change default icon to be a generic satellite, add ISS icon (if marker name contains ISS)
 
 v0.7.0
  - Swap to sockjs llibrary as it seems more stable
