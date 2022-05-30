@@ -8,35 +8,36 @@ var rideWith = "";
 // ---- Connect to the Node-RED Events --------------------
 
 var ws = io({
-	path: location.pathname + 'socket.io'
+    path: location.pathname + 'socket.io'
 });
+console.log("WS",ws)
 
 ws.on('connect', function () {
-	console.log("CONNECTED");
-	ws.emit("worldmap", {
-		action: "connected"
-	});
+    console.log("CONNECTED");
+    ws.emit("worldmap", {
+        action: "connected"
+    });
 });
 
 ws.on('disconnect', function () {
-	console.log("DISCONNECTED");
-	setTimeout(function () {
-		ws.connect();
-	}, 2500);
+    console.log("DISCONNECTED");
+    setTimeout(function () {
+        ws.connect();
+    }, 2500);
 });
 
 ws.on('error', function () {
-	console.log("ERROR");
-	setTimeout(function () {
-		ws.connect();
-	}, 2500);
+    console.log("ERROR");
+    setTimeout(function () {
+        ws.connect();
+    }, 2500);
 });
 
 /*
 	Handle incoming satellite data from NodeRED
 */
 ws.on('earthdata', function (data) {
-    //console.log("DATA",data);
+    // console.log("DATA",data);
     if (data.name) {
         if (data.deleted) { earth.delMarker(data.name); return; }
         var pos;
@@ -66,7 +67,7 @@ ws.on('earthdata', function (data) {
         render();
     }
     else {
-				//maybe it's an array of points for a line
+        //maybe it's an array of points for a line
         if (data.deleted) { earth.delLine(data[0].name); return; }
         if (data.length > 2) {
             var name = data[0].name;
@@ -110,9 +111,9 @@ function Earth(radius, texture, relief, spec) {
         new THREE.MeshPhongMaterial({
             map: texture,
             bumpMap: relief,
-    		bumpScale: 1,
-    		specular: new THREE.Color('rgb(64,64,64)'),
-    		specularMap: spec
+            bumpScale: 1,
+            specular: new THREE.Color('rgb(64,64,64)'),
+            specularMap: spec
         })
     );
     this.add(earth1);
@@ -173,8 +174,8 @@ function init() {
 
     // High res for demo
     //var texture = new THREE.TextureLoader().load("images/earth_color.jpg");
-	//var bump = new THREE.TextureLoader().load("images/earth_bump.jpg");
-	//var specular = new THREE.TextureLoader().load("images/earth_spec.png");
+    //var bump = new THREE.TextureLoader().load("images/earth_bump.jpg");
+    //var specular = new THREE.TextureLoader().load("images/earth_spec.png");
     // Low res for faster render/dev mode
     //var texture = new THREE.TextureLoader().load("images/earth_color_latlng.jpg");
     var texture = new THREE.TextureLoader().load("images/earthmap1k.jpg");
@@ -189,63 +190,63 @@ function init() {
     var ambient = new THREE.AmbientLight(0xffffff, 0.35);
     scene.add(ambient);
 
-		/* Sun */
+    /* Sun */
     var directional = new THREE.DirectionalLight(0xffffff, 0.65);
     var sun = sunPos();
     //directional.position.set(5.0, 2.0, 5.0).normalize();
     directional.position.set(sun[0] * 90, sun[1] * 23.5, sun[2] * 90).normalize();
     scene.add(directional);
 
-		/* Skybox */
-		function genRandomStarField(numberOfStars, width, height) {
-		    var canvas = document.createElement('CANVAS');
+    /* Skybox */
+    function genRandomStarField(numberOfStars, width, height) {
+        var canvas = document.createElement('CANVAS');
 
-				canvas.width = width;
-				canvas.height = height;
+        canvas.width = width;
+        canvas.height = height;
 
-				var ctx = canvas.getContext('2d');
+        var ctx = canvas.getContext('2d');
 
-				ctx.fillStyle="black";
-				ctx.fillRect(0, 0, width, height);
+        ctx.fillStyle="black";
+        ctx.fillRect(0, 0, width, height);
 
-				for (var i = 0; i < numberOfStars; ++i) {
-					var radius = Math.random() * 2;
-					var x = Math.floor(Math.random() * width);
-					var y = Math.floor(Math.random() * height);
+        for (var i = 0; i < numberOfStars; ++i) {
+            var radius = Math.random() * 2;
+            var x = Math.floor(Math.random() * width);
+            var y = Math.floor(Math.random() * height);
 
-					ctx.beginPath();
-					ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
-					ctx.fillStyle = 'white';
-					ctx.fill();
-			}
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+        }
 
-			var texture = new THREE.Texture(canvas);
-			texture.needsUpdate = true;
-			return texture;
-		};
-		var skyBox = new THREE.BoxGeometry(120, 120, 120);
-		var skyBoxMaterial = new THREE.MeshBasicMaterial({
-		    map: genRandomStarField(600, 2048, 2048),
-			side: THREE.BackSide
-		});
-		var sky = new THREE.Mesh(skyBox, skyBoxMaterial);
-		scene.add(sky);
+        var texture = new THREE.Texture(canvas);
+        texture.needsUpdate = true;
+        return texture;
+    };
+    var skyBox = new THREE.BoxGeometry(120, 120, 120);
+    var skyBoxMaterial = new THREE.MeshBasicMaterial({
+        map: genRandomStarField(600, 2048, 2048),
+        side: THREE.BackSide
+    });
+    var sky = new THREE.Mesh(skyBox, skyBoxMaterial);
+    scene.add(sky);
 
-		/* User Clicking/Interaction */
+    /* User Clicking/Interaction */
     renderer.domElement.addEventListener("click", onObjectClick, true);
     var raycaster = new THREE.Raycaster();
     var mouse = new THREE.Vector2();
     function onObjectClick(event) {
         event.preventDefault();
-				rideWith = ""
-				let status = controls.autoRotate ? 'auto-rotate: on' : 'auto-rotate: paused'
-				document.getElementById("info").textContent = status
+        rideWith = ""
+        let status = controls.autoRotate ? 'auto-rotate: on' : 'auto-rotate: paused'
+        document.getElementById("info").textContent = status
         mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
-				mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
+        mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
         raycaster.setFromCamera(mouse, camera);
         var intersects = raycaster.intersectObjects(scene.children,true);
         for (var i=0; i < intersects.length; i++) {
-						// User has clicked on an orbiting satellite
+            // User has clicked on an orbiting satellite
             if (intersects[i].object.parent.name !== "") {
                 rideWith = intersects[i].object.parent.name;
                 var m = markers[intersects[i].object.parent.name].position;
@@ -322,7 +323,7 @@ function createTable(){
     var intab = ""
     for (var key in markers) {
         if (markers.hasOwnProperty(key)) {
-					console.log(markers[key])
+            console.log(markers[key])
             intab += '<tr onmouseover=\'rowover(\"'+key+'\")\' onmouseout=\'rowout(\"'+key+'\")\' onclick=\'rowclick(\"'+key+'\")\'><td class="list">' + key + '</td><td>' + Math.round((10*markers[key].altitude)/1000)/10 + 'km</td><td>' + Math.round(10*markers[key].velocity/1000)/10 + 'km/s</td></tr>';
         }
     }

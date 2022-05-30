@@ -21,10 +21,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="shortcut icon" type="image/ico" href="favicon.ico"/>
 
-	<script type="text/javascript" src="socketio/socket.io-1.7.3.min.js"></script>
+	<script type="text/javascript" src="socketio/socket.io.min.js"></script>
 	<script type="text/javascript" src="three.min.js"></script>
-	<!-- <script type="text/javascript" src="threejs-controls/trackball-controls.js"></script>
-	<script type="text/javascript" src="satellites.js"></script> -->
     <script type="text/javascript" src="threejs-controls/orbit-controls.js"></script>
     <script type="text/javascript" src="satellites.js"></script>
 
@@ -33,10 +31,9 @@
 <body onload="init(); animate();">
     <div id="info" class="ui">spacebar to pause/unpause</div>
     <!-- <button id="MENU" class="ui" style="right:0" >MENU</button> -->
-		<div class="sattable-container">
-			<h2>Tracking:</h2>
-			<table id="objects" class="sattable" ></table>
-		</div>
-
+    <div class="sattable-container">
+        <h2>Tracking:</h2>
+        <table id="objects" class="sattable" ></table>
+    </div>
 </body>
 </html>
