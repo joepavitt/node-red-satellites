@@ -164,14 +164,16 @@ function init() {
     scene = new THREE.Scene();
 
     // High res for demo
-    //var texture = new THREE.TextureLoader().load("images/earth_color.jpg");
-    //var bump = new THREE.TextureLoader().load("images/earth_bump.jpg");
-    //var specular = new THREE.TextureLoader().load("images/earth_spec.png");
+    // var texture = new THREE.TextureLoader().load("images/earth_color.jpg");
+    // var texture = new THREE.TextureLoader().load("images/earth_night.jpg");
+    // var texture = new THREE.TextureLoader().load("images/earth_color_latlng.jpg");
+    var texture = new THREE.TextureLoader().load("images/earthmap10k.jpg");
+    var bump = new THREE.TextureLoader().load("images/earthbump10k.jpg");
+    var specular = new THREE.TextureLoader().load("images/earthspec10k.jpg");
     // Low res for faster render/dev mode
-    //var texture = new THREE.TextureLoader().load("images/earth_color_latlng.jpg");
-    var texture = new THREE.TextureLoader().load("images/earthmap1k.jpg");
-    var bump = new THREE.TextureLoader().load("images/earthbump1k.jpg");
-    var specular = new THREE.TextureLoader().load("images/earthspec1k.jpg");
+    // var texture = new THREE.TextureLoader().load("images/earthmap1k.jpg");
+    // var bump = new THREE.TextureLoader().load("images/earthbump1k.jpg");
+    // var specular = new THREE.TextureLoader().load("images/earthspec1k.jpg");
     texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
     earth = new Earth(1.0, texture, bump, specular);
