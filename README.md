@@ -7,6 +7,9 @@ The list of satellites, and associated TLE data is retrieved from [NORAD](https:
 
 ## Changelog
 
+v0.7.2
+ - change default images of earth to higher res versions
+
 v0.7.0
  - Swap to sockjs llibrary as it seems more stable
 

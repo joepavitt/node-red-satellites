@@ -165,8 +165,8 @@ function init() {
 
     // High res for demo
     // var texture = new THREE.TextureLoader().load("images/earth_color.jpg");
-    // var texture = new THREE.TextureLoader().load("images/earth_night.jpg");
     // var texture = new THREE.TextureLoader().load("images/earth_color_latlng.jpg");
+    // var texture = new THREE.TextureLoader().load("images/earthnight10k.jpg");
     var texture = new THREE.TextureLoader().load("images/earthmap10k.jpg");
     var bump = new THREE.TextureLoader().load("images/earthbump10k.jpg");
     var specular = new THREE.TextureLoader().load("images/earthspec10k.jpg");
