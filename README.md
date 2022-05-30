@@ -7,8 +7,12 @@ The list of satellites, and associated TLE data is retrieved from [NORAD](https:
 
 ## Changelog
 
+v0.7.0
+ - Swap to sockjs llibrary as it seems more stable
+
 v0.5.0
  - Add Planet Labs satellites to the dropdown list
+ 
 v0.3.0
   - New 3d rendering using lat,lon,alt - that is much more accurate. Also includes sun in correct relative position, ability to ride along with the chosen satellite, and pause/resume gentle rotation. Updated examples.
 

@@ -7,75 +7,66 @@ var rideWith = "";
 
 // ---- Connect to the Node-RED Events --------------------
 
-var ws = io({
-    path: location.pathname + 'socket.io'
-});
-console.log("WS",ws)
 
-ws.on('connect', function () {
-    console.log("CONNECTED");
-    ws.emit("worldmap", {
-        action: "connected"
-    });
-});
+var connect = function() {
+    var ws = new SockJS(location.pathname + 'socket');
 
-ws.on('disconnect', function () {
-    console.log("DISCONNECTED");
-    setTimeout(function () {
-        ws.connect();
-    }, 2500);
-});
+    ws.onopen = function () {
+        console.log("CONNECTED");
+        ws.send({ action: "connected" });
+    };
 
-ws.on('error', function () {
-    console.log("ERROR");
-    setTimeout(function () {
-        ws.connect();
-    }, 2500);
-});
+    ws.onclose = function () {
+        console.log("DISCONNECTED");
+        setTimeout(function() { connect(); }, 2500);
+    };
 
-/*
-	Handle incoming satellite data from NodeRED
-*/
-ws.on('earthdata', function (data) {
-    // console.log("DATA",data);
-    if (data.name) {
-        if (data.deleted) { earth.delMarker(data.name); return; }
-        var pos;
-        if (data.hasOwnProperty("position")) { pos = data.position; }
-        else if (data.hasOwnProperty("lat") && data.hasOwnProperty("lon")) {
-            pos = {lat:data.lat, lon:data.lon, alt:data.alt || 0 }
+    /*
+        Handle incoming satellite data from NodeRED
+    */
+    ws.onmessage = function (data) {
+        data = JSON.parse(data.data);
+        //console.log("DATA",data);
+        if (data.name) {
+            if (data.deleted) { earth.delMarker(data.name); return; }
+            var pos;
+            if (data.hasOwnProperty("position")) { pos = data.position; }
+            else if (data.hasOwnProperty("lat") && data.hasOwnProperty("lon")) {
+                pos = {lat:data.lat, lon:data.lon, alt:data.alt || 0 }
+            }
+            else {
+                console.error("Bad Data:",data);
+                return;
+            }
+
+            earth.setMarker(data.name, pos.lat, pos.lon, pos.alt, data.color);
+            if (data.hasOwnProperty("velocity")) {
+                var v = data.velocity;
+                markers[data.name].velocity = Math.round(Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z));
+            }
+            if (pos.hasOwnProperty("alt")) {
+                var a = pos.alt;
+                markers[data.name].altitude = Math.round(a);
+            }
+            if (data.name === rideWith) {
+                var m = markers[data.name].position;
+                controls.autoRotate = false;
+                camera.position.set(m.x,m.y,m.z);
+            }
+            render();
         }
         else {
-            console.error("Bad Data:",data);
-            return;
+            //maybe it's an array of points for a line
+            if (data.deleted) { earth.delLine(data[0].name); return; }
+            if (data.length > 2) {
+                var name = data[0].name;
+                earth.setLine(name,data);
+            }
         }
-
-        earth.setMarker(data.name, pos.lat, pos.lon, pos.alt, data.color);
-        if (data.hasOwnProperty("velocity")) {
-            var v = data.velocity;
-            markers[data.name].velocity = Math.round(Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z));
-        }
-        if (pos.hasOwnProperty("alt")) {
-            var a = pos.alt;
-            markers[data.name].altitude = Math.round(a);
-        }
-        if (data.name === rideWith) {
-            var m = markers[data.name].position;
-            controls.autoRotate = false;
-            camera.position.set(m.x,m.y,m.z);
-        }
-        render();
-    }
-    else {
-        //maybe it's an array of points for a line
-        if (data.deleted) { earth.delLine(data[0].name); return; }
-        if (data.length > 2) {
-            var name = data[0].name;
-            earth.setLine(name,data);
-        }
-    }
-    createTable();
-});
+        createTable();
+    };
+}
+setTimeout(function() { connect() }, 250);
 
 // ------ Marker object ------------------------------------------------
 
@@ -323,7 +314,7 @@ function createTable(){
     var intab = ""
     for (var key in markers) {
         if (markers.hasOwnProperty(key)) {
-            console.log(markers[key])
+            //console.log(markers[key])
             intab += '<tr onmouseover=\'rowover(\"'+key+'\")\' onmouseout=\'rowout(\"'+key+'\")\' onclick=\'rowclick(\"'+key+'\")\'><td class="list">' + key + '</td><td>' + Math.round((10*markers[key].altitude)/1000)/10 + 'km</td><td>' + Math.round(10*markers[key].velocity/1000)/10 + 'km/s</td></tr>';
         }
     }

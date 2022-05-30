@@ -3,11 +3,10 @@ module.exports = function (RED) {
     "use strict";
     var express = require("express");
     var path = require("path");
-    var io = require('socket.io');
+    const sockjs = require('sockjs');
     var http = require('http');
 
     var satellite = require('satellite.js').satellite;
-    var socket;
 
     function parseTLEFile(fileURL) {
         return new Promise(function(resolve, reject) {
@@ -58,7 +57,6 @@ module.exports = function (RED) {
             }
         }
     }
-
 
     /*
 		TLE Node
@@ -121,6 +119,7 @@ module.exports = function (RED) {
         });
     }
     RED.nodes.registerType("tle", TLENode);
+
 
     /*
 		Satellite Node
@@ -202,8 +201,8 @@ module.exports = function (RED) {
             // node.send(msg);
         });
     }
-
     RED.nodes.registerType("satellite", SatelliteNode);
+
 
     function TimeArrayNode(config) {
         RED.nodes.createNode(this, config);
@@ -237,48 +236,49 @@ module.exports = function (RED) {
     }
     RED.nodes.registerType("timearray", TimeArrayNode);
 
+
     function EarthNode(config) {
         RED.nodes.createNode(this, config);
-        if (!socket) {
-            var fullPath = path.posix.join(RED.settings.httpNodeRoot, 'earth', 'socket.io');
-            socket = io.listen(RED.server, {
-                path: fullPath
+        var io;
+        if (!io) {
+            var fullPath = path.posix.join(RED.settings.httpNodeRoot, 'earth', 'socket');
+            io = sockjs.createServer({ prefix: fullPath });
+            io.installHandlers(RED.server);
+            io.on("connection", (socket) => {
+                socket.setMaxListeners(0);
+                node.status({
+                    fill: "green",
+                    shape: "dot",
+                    text: "connected "
+                });
+
+                function emit(msg) {
+                    socket.write(JSON.stringify(msg.payload));
+                }
+
+                node.on('input', emit);
+
+                socket.on('disconnect', function () {
+                    node.removeListener("input", emit);
+                    node.status({
+                        fill: "green",
+                        shape: "ring",
+                        text: "connected " + socket.engine.clientsCount
+                    });
+                });
+
+                node.on('close', function () {
+                    node.status({});
+                    socket.disconnect(true);
+                });
             });
         }
         var node = this;
 
         RED.httpNode.use("/earth", express.static(__dirname + '/satellites'));
 
-        var onConnection = function (client) {
-            client.setMaxListeners(0);
-            node.status({
-                fill: "green",
-                shape: "dot",
-                text: "connected " + socket.engine.clientsCount
-            });
-
-            function emit(msg) {
-                client.emit("earthdata", msg.payload);
-            }
-
-            node.on('input', emit);
-
-            client.on('disconnect', function () {
-                node.removeListener("input", emit);
-                node.status({
-                    fill: "green",
-                    shape: "ring",
-                    text: "connected " + socket.engine.clientsCount
-                });
-            });
-
-            node.on('close', function () {
-                node.status({});
-                client.disconnect(true);
-            });
-        };
         node.status({});
-        socket.on('connection', onConnection);
+        //socket.on('connection', onConnection);
     }
     RED.nodes.registerType("earth", EarthNode);
 };
