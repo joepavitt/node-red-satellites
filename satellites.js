@@ -137,7 +137,7 @@ module.exports = function (RED) {
         function loadRemoteTLEData (type) {
             return new Promise(function(resolve, reject) {
                 if (!noradData) {
-                    parseTLEFile('http://www.celestrak.com/NORAD/elements/' + type + '.txt')
+                    parseTLEFile('http://www.celestrak.org/NORAD/elements/' + type + '.txt')
                         .then(function(data) {
                             var sat = {};
                             for (var i = 0; i < data.length; i++) {
